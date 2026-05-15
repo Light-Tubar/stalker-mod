@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "stalker-mod",
+	"version": "${version}",
+	"name": "Stalker Mod",
+	"description": "Tubarcev's Anomaly",
+	"authors": [
+		"Tubarcev"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+  "entrypoints": {
+    "main": [
+      "net.light.stalkermod.StalkerMod"
+    ],
+    "client": [
+      "net.light.stalkermod.StalkerModClient"
+    ]
+  },
+	"mixins": [
+		"stalker-mod.mixins.json"
+	],
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": "~1.21.1",
+    "java": ">=21"
+  }
+}

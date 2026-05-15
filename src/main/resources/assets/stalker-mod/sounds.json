@@ -1,0 +1,112 @@
+{
+  "geiger_1": {
+    "sounds": [
+      "stalker-mod:geiger_1"
+    ]
+  },
+  "geiger_2": {
+    "sounds": [
+      "stalker-mod:geiger_2"
+    ]
+  },
+  "geiger_3": {
+    "sounds": [
+      "stalker-mod:geiger_3"
+    ]
+  },
+  "geiger_4": {
+    "sounds": [
+      "stalker-mod:geiger_4"
+    ]
+  },
+  "trampoline_idle": {
+    "sounds": [
+      "stalker-mod:trampoline_idle_1",
+      "stalker-mod:trampoline_idle_2"
+    ]
+  },
+  "trampoline_activate": {
+    "sounds": [
+      "stalker-mod:trampoline_activate_1",
+      "stalker-mod:trampoline_activate_2",
+      "stalker-mod:trampoline_activate_3"
+    ]
+  },
+  "burner_idle": {
+    "sounds": [
+      "stalker-mod:burner_idle"
+    ]
+  },
+  "burner_activate": {
+    "sounds": [
+      "stalker-mod:burner_activate"
+    ]
+  },
+  "electro_activate": {
+    "sounds": [
+      "stalker-mod:electro_activate_1",
+      "stalker-mod:electro_activate_2"
+    ]
+  },
+  "electro_idle": {
+    "sounds": [
+      "stalker-mod:electro_idle"
+    ]
+  },
+  "acid_activate": {
+    "sounds": [
+      "stalker-mod:acid_activate"
+    ]
+  },
+  "emission_wind": {
+    "category": "weather",
+    "sounds": [
+      "stalker-mod:wind1",
+      "stalker-mod:wind2",
+      "stalker-mod:wind3"
+    ]
+  },
+  "emission_siren": {
+    "category": "weather",
+    "sounds": [
+      "stalker-mod:siren_1",
+      "stalker-mod:siren_2"
+    ]
+  },
+  "emission_blowout": {
+    "category": "weather",
+    "sounds": [
+      "stalker-mod:blowout"
+    ]
+  },
+  "emission_earthquake": {
+    "category": "weather",
+    "sounds": [
+      "stalker-mod:earthquake"
+    ]
+  },
+  "emission_thunder": {
+    "category": "weather",
+    "sounds": [
+      "stalker-mod:thunder-0",
+      "stalker-mod:thunder-1",
+      "stalker-mod:thunder-2",
+      "stalker-mod:thunder-3"
+    ]
+  },
+  "bolt_throw": {
+    "category": "neutral",
+    "sounds": [
+      "stalker-mod:bolt_throw"
+    ]
+  },
+  "bolt_hit": {
+    "category": "neutral",
+    "sounds": [
+      "stalker-mod:bolt_hit1",
+      "stalker-mod:bolt_hit2"
+    ]
+  }
+}
+
+

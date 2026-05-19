@@ -238,26 +238,25 @@ public class AnomalyEntity extends Entity {
                 net.minecraft.sound.SoundCategory.HOSTILE, 2.0f, 0.8f);
 
         for (Entity entity : targets) {
-            
+
             if (entity instanceof net.minecraft.entity.ItemEntity || entity instanceof net.minecraft.entity.projectile.ProjectileEntity) {
-                
                 world.spawnParticles(net.minecraft.particle.ParticleTypes.POOF, entity.getX(), entity.getY(), entity.getZ(), 5, 0.1, 0.1, 0.1, 0.05);
-                entity.discard(); 
-                continue; 
+                entity.discard();
+                continue;
             }
 
-            
-            
             entity.requestTeleport(center.x, center.y, center.z);
 
-            
+            if (entity instanceof LivingEntity living) {
+                living.damage(this.getWorld().getDamageSources().indirectMagic(this, this), this.damage);
+            }
+
             entity.setVelocity(0, repulsionForce * 2.5, 0);
             entity.velocityModified = true;
             entity.velocityDirty = true;
 
             if (entity instanceof LivingEntity living) {
-                
-                living.damage(this.getWorld().getDamageSources().magic(), this.damage);
+                living.damage(this.getWorld().getDamageSources().indirectMagic(this, this), this.damage);
             }
         }
 

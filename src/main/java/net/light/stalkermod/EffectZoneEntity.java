@@ -155,10 +155,12 @@ public class EffectZoneEntity extends Entity {
         
         effectiveStrength = Math.max(0.0f, effectiveStrength);
 
-        if (effectiveStrength == 0.0f) return; 
+        if (effectiveStrength == 0.0f) return;
 
         float damage = (effectiveStrength * effectiveStrength) / 5.0f;
-        entity.damage(world.getDamageSources().magic(), damage);
+        Vec3d vel = entity.getVelocity();
+        entity.damage(world.getDamageSources().indirectMagic(this, this), damage);
+        entity.setVelocity(vel);
 
         if (type == 1) { 
             int radAmplifier = (int)(effectiveStrength / 2);

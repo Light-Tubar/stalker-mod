@@ -17,6 +17,7 @@ import java.util.List;
 public class EmissionManager {
     public static int emissionTimer = -1;
     public static int nextEmissionInterval = 72000;
+    public static boolean isEmissionDamage = false;
 
     public static void register() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
@@ -57,7 +58,7 @@ public class EmissionManager {
                 if (emissionTimer == 1200) {
                     for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                         if (player.getServerWorld().getRegistryKey() != World.OVERWORLD) continue;
-                        playPersonalSound(player, StalkerMod.EMISSION_EARTHQUAKE, 2.0f, 1.0f, 0.0, -15.0, 0.0);
+                        playPersonalSound(player, StalkerMod.EMISSION_EARTHQUAKE, 4.0f, 1.0f, 0.0, -15.0, 0.0);
 
                         double dx = (player.getServerWorld().random.nextDouble() - 0.5) * 30.0;
                         double dz = (player.getServerWorld().random.nextDouble() - 0.5) * 30.0;
@@ -82,7 +83,7 @@ public class EmissionManager {
                 if (emissionTimer == 600) {
                     for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                         if (player.getServerWorld().getRegistryKey() != World.OVERWORLD) continue;
-                        playPersonalSound(player, StalkerMod.EMISSION_EARTHQUAKE, 5.0f, 0.9f, 0.0, -20.0, 0.0);
+                        playPersonalSound(player, StalkerMod.EMISSION_EARTHQUAKE, 10.0f, 0.9f, 0.0, -20.0, 0.0);
                     }
                 }
 
@@ -122,7 +123,7 @@ public class EmissionManager {
                 if (emissionTimer == 230) {
                     for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                         if (player.getServerWorld().getRegistryKey() != World.OVERWORLD) continue;
-                        playPersonalSound(player, StalkerMod.EMISSION_EARTHQUAKE, 8.0f, 0.6f, 0.0, -25.0, 0.0);
+                        playPersonalSound(player, StalkerMod.EMISSION_EARTHQUAKE, 15.0f, 0.6f, 0.0, -25.0, 0.0);
                     }
                 }
 
@@ -143,7 +144,9 @@ public class EmissionManager {
                         player.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 400, 1));
                         player.sendMessage(Text.literal("§aВыброс миновал. Вы в безопасности."), false);
                     } else {
+                        isEmissionDamage = true;
                         player.damage(player.getServerWorld().getDamageSources().magic(), 1000.0f);
+                        isEmissionDamage = false;
                         player.sendMessage(Text.literal("§4Ваша нервная система выжжена Выбросом."), false);
                     }
                     net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, new net.light.stalkermod.network.EmissionPayload(0));
@@ -152,7 +155,7 @@ public class EmissionManager {
             }
         });
     }
-    
+
     private static void playPersonalSound(ServerPlayerEntity player, net.minecraft.sound.SoundEvent sound, float volume, float pitch, double offsetX, double offsetY, double offsetZ) {
         player.networkHandler.sendPacket(new net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket(
                 net.minecraft.registry.entry.RegistryEntry.of(sound),

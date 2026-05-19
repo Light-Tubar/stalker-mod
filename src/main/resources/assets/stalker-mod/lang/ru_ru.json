@@ -1,3 +1,8 @@
 {
-  "item.stalker-mod.anomaly_spawner": "Пульт управления аномалиями"
+  "item.stalker-mod.bolt": "Болт",
+  "item.stalker-mod.anomaly_spawner": "Пульт управления аномалиями",
+  "entity.stalker-mod.bolt_entity": "Болт",
+  "entity.stalker-mod.anomaly": "Аномалия",
+  "entity.stalker-mod.elemental_anomaly": "Стихийная аномалия",
+  "entity.stalker-mod.effect_zone": "Зона воздействия"
 }

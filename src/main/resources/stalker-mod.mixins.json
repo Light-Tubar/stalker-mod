@@ -2,6 +2,12 @@
   "required": true,
   "package": "net.light.stalkermod.mixin",
   "compatibilityLevel": "JAVA_21",
+
+  "mixins": [
+    "DamageTrackerMixin",
+    "LivingEntityMixin"
+  ],
+
   "client": [
     "SkyColorMixin",
     "FogColorMixin",
@@ -12,6 +18,7 @@
     "AbstractSoundInstanceMixin",
     "SoundOptionsScreenMixin"
   ],
+
   "injectors": {
     "defaultRequire": 1
   },

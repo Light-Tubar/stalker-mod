@@ -23,15 +23,12 @@ public abstract class CameraMixin {
         if (t > 0) {
             float intensity = 0.0f;
 
-            
-            if (t <= 1800 && t > 1570) intensity = 0.8f;      
-            else if (t <= 1200 && t > 970) intensity = 1.5f;  
-            else if (t <= 230 && t > 0) intensity = 3.0f;    
+            if (t <= 1200 && t > 970) intensity = 1.5f;
+            else if (t <= 600 && t > 370) intensity = 2.0f;
+            else if (t <= 230 && t > 0) intensity = 3.0f;
 
             if (intensity > 0.0f) {
-                
                 float wave = (float) Math.sin(t * 0.5) * (intensity * 0.5f);
-                
                 float jitterYaw = (float) ((Math.random() - 0.5) * intensity);
                 float jitterPitch = (float) ((Math.random() - 0.5) * intensity);
 

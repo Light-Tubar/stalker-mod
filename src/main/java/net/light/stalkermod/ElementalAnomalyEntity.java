@@ -210,21 +210,26 @@ public class ElementalAnomalyEntity extends Entity {
     }
 
     private void triggerAnomaly(ServerWorld world, List<Entity> targets) {
-        
         world.sendEntityStatus(this, (byte) 3);
 
         for (Entity target : targets) {
-            if (type == 0) {
-                target.damage(world.getDamageSources().magic(), 10.0f);
-                if (target instanceof LivingEntity living) {
+            float damageAmount = 0.0f;
+            if (type == 0) damageAmount = 10.0f;
+            else if (type == 1) damageAmount = 16.0f;
+            else if (type == 2) damageAmount = 19.0f;
+
+            Vec3d vel = target.getVelocity();
+            if (target.damage(world.getDamageSources().indirectMagic(this, this), damageAmount)) {
+                target.setVelocity(vel);
+                target.velocityModified = true;
+            }
+
+            if (target instanceof LivingEntity living) {
+                if (type == 0) {
                     living.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 100, 1));
+                } else if (type == 1) {
+                    target.setOnFireFor(8);
                 }
-            } else if (type == 1) {
-                target.damage(world.getDamageSources().inFire(), 16.0f);
-                target.setOnFireFor(8);
-            } else if (type == 2) {
-                
-                target.damage(world.getDamageSources().outOfWorld(), 19.0f);
             }
         }
 

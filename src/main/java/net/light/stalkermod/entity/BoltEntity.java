@@ -134,8 +134,9 @@ public class BoltEntity extends ThrownItemEntity {
 
         this.setVelocity(x, y, z);
 
-        if (!this.getWorld().isClient) {
-            this.getWorld().playSound(null, this.getBlockPos(), StalkerMod.BOLT_HIT, SoundCategory.NEUTRAL, 0.8f, 1.2f + (this.random.nextFloat() * 0.4f));
+        if (!this.getWorld().isClient && this.getVelocity().length() > 0.3) {
+            this.getWorld().playSound(null, this.getBlockPos(), StalkerMod.BOLT_HIT,
+                    SoundCategory.NEUTRAL, 0.4f, 0.8f + (this.random.nextFloat() * 0.4f));
         }
     }
 

@@ -44,6 +44,20 @@ public class EffectZoneEntity extends Entity {
         this.setNoGravity(true);   
     }
 
+    public void setZoneData(BlockPos p1, BlockPos p2, int type, float strength) {
+        this.pos1 = p1;
+        this.pos2 = p2;
+        this.type = type;
+        this.strength = strength;
+
+        if (!this.getWorld().isClient()) {
+            this.dataTracker.set(SYNC_P1, p1);
+            this.dataTracker.set(SYNC_P2, p2);
+            this.dataTracker.set(SYNC_TYPE, type);
+            this.dataTracker.set(SYNC_STRENGTH, strength);
+        }
+    }
+
     @Override
     protected void initDataTracker(DataTracker.Builder builder) {
         builder.add(SYNC_P1, BlockPos.ORIGIN);
@@ -63,28 +77,13 @@ public class EffectZoneEntity extends Entity {
         super.tick();
         this.calculateDimensions();
 
-        
-        
-        
-        if (!this.getWorld().isClient()) {
-            
-            
-            
-            if (this.pos1 != null) this.dataTracker.set(SYNC_P1, this.pos1);
-            if (this.pos2 != null) this.dataTracker.set(SYNC_P2, this.pos2);
-            this.dataTracker.set(SYNC_TYPE, this.type);
-            this.dataTracker.set(SYNC_STRENGTH, this.strength);
-        } else {
-            
+        if (this.getWorld().isClient()) {
             this.pos1 = this.dataTracker.get(SYNC_P1);
             this.pos2 = this.dataTracker.get(SYNC_P2);
             this.type = this.dataTracker.get(SYNC_TYPE);
             this.strength = this.dataTracker.get(SYNC_STRENGTH);
         }
 
-        
-        
-        
         if (this.pos1 == null || this.pos2 == null) {
             return;
         }
@@ -239,6 +238,13 @@ public class EffectZoneEntity extends Entity {
         if (nbt.contains("P2X")) {
             this.pos2 = new BlockPos(nbt.getInt("P2X"), nbt.getInt("P2Y"), nbt.getInt("P2Z"));
         }
+
+        if (!this.getWorld().isClient()) {
+            this.dataTracker.set(SYNC_TYPE, this.type);
+            this.dataTracker.set(SYNC_STRENGTH, this.strength);
+            if (this.pos1 != null) this.dataTracker.set(SYNC_P1, this.pos1);
+            if (this.pos2 != null) this.dataTracker.set(SYNC_P2, this.pos2);
+        }
     }
 
 
@@ -296,25 +302,17 @@ public class EffectZoneEntity extends Entity {
 
     @Override
     public net.minecraft.entity.EntityDimensions getDimensions(net.minecraft.entity.EntityPose pose) {
-        
         if (this.getWorld().isClient()) {
             var player = net.minecraft.client.MinecraftClient.getInstance().player;
-            
-            if (player != null && player.isCreative()) {
+            if (player != null && (player.isCreative() || player.isSpectator())) {
                 return net.minecraft.entity.EntityDimensions.fixed(1.0f, 1.0f);
             }
-            
-            return net.minecraft.entity.EntityDimensions.fixed(0.0f, 0.0f);
+            return net.minecraft.entity.EntityDimensions.fixed(0.001f, 0.001f);
         }
+        return net.minecraft.entity.EntityDimensions.fixed(1.0f, 1.0f);
+    }
 
-        
-        boolean adminNearby = false;
-        for (PlayerEntity p : this.getWorld().getPlayers()) {
-            if (p.isCreative() && p.squaredDistanceTo(this) <= 400.0) {
-                adminNearby = true;
-                break;
-            }
-        }
-        return adminNearby ? net.minecraft.entity.EntityDimensions.fixed(1.0f, 1.0f) : net.minecraft.entity.EntityDimensions.fixed(0.0f, 0.0f);
+    public float getNameLabelHeight() {
+        return 0;
     }
 }

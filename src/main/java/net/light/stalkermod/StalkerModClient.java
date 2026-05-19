@@ -143,12 +143,9 @@ public class StalkerModClient implements ClientModInitializer {
         StalkerModConfigClient.load();
         ZoneOverlay.init();
         EntityRendererRegistry.register(StalkerMod.ANOMALY_ENTITY, EmptyEntityRenderer::new);
-        EntityRendererRegistry.register(StalkerMod.EFFECT_ZONE_ENTITY, EmptyEntityRenderer::new);
         EntityRendererRegistry.register(StalkerMod.ELEMENTAL_ANOMALY, EmptyEntityRenderer::new);
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
-                net.light.stalkermod.StalkerMod.BOLT_ENTITY_TYPE,
-                net.light.stalkermod.BoltEntityRenderer::new
-        );
+        EntityRendererRegistry.register(StalkerMod.EFFECT_ZONE_ENTITY, EffectZoneEntityRenderer::new);
+        EntityRendererRegistry.register(net.light.stalkermod.StalkerMod.BOLT_ENTITY_TYPE, net.light.stalkermod.BoltEntityRenderer::new);
 
         
         ClientPlayNetworking.registerGlobalReceiver(EmissionPayload.ID, (payload, context) -> {

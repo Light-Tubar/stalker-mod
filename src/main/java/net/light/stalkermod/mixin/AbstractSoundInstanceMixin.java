@@ -15,17 +15,14 @@ public abstract class AbstractSoundInstanceMixin {
     private void applyStalkerSoundVolume(CallbackInfoReturnable<Float> cir) {
         Identifier id = ((AbstractSoundInstance)(Object)this).getId();
 
-        
         if (id.getNamespace().equals("stalker-mod")) {
             String path = id.getPath();
 
-            
             if (path.contains("emission") || path.contains("blowout") ||
                     path.contains("earthquake") || path.contains("thunder") || path.contains("wind")) {
                 cir.setReturnValue(cir.getReturnValue() * (float) StalkerModConfigClient.emissionVolume);
             }
-            
-            else if (path.contains("anomaly") || path.contains("burner") || path.contains("geiger")) {
+            else if (path.contains("anomaly") || path.contains("burner") || path.contains("trampoline") || path.contains("electro") || path.contains("acid")) {
                 cir.setReturnValue(cir.getReturnValue() * (float) StalkerModConfigClient.anomalyVolume);
             }
         }

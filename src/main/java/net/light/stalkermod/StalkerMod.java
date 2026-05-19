@@ -217,12 +217,10 @@ public class StalkerMod implements ModInitializer {
                     BlockPos p2 = new BlockPos(nbt.getInt("P2X"), nbt.getInt("P2Y"), nbt.getInt("P2Z"));
 
                     EffectZoneEntity zone = new EffectZoneEntity(EFFECT_ZONE_ENTITY, world);
-                    zone.pos1 = p1;
-                    zone.pos2 = p2;
-                    zone.type = (mode == 4) ? 1 : 2;
+                    int zoneType = (mode == 4) ? 1 : 2;
+                    float zoneStrength = nbt.contains("ZoneStrength") ? nbt.getFloat("ZoneStrength") : 1.0f;
 
-                    
-                    zone.strength = nbt.contains("ZoneStrength") ? nbt.getFloat("ZoneStrength") : 1.0f;
+                    zone.setZoneData(p1, p2, zoneType, zoneStrength);
 
                     world.spawnEntity(zone);
 
@@ -244,7 +242,7 @@ public class StalkerMod implements ModInitializer {
 
             return TypedActionResult.success(itemStack);
         }
-    }; 
+    };
 
     public static float getInventoryRadiation(PlayerEntity player) {
         float totalRad = 0.0f;
@@ -252,11 +250,9 @@ public class StalkerMod implements ModInitializer {
             ItemStack stack = player.getInventory().getStack(i);
             if (stack.isEmpty()) continue;
 
-            if (stack.getComponents().contains(DataComponentTypes.CUSTOM_DATA)) {
-                NbtCompound nbt = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).copyNbt();
-                if (nbt.contains("ArtifactRad")) {
-                    totalRad += nbt.getFloat("ArtifactRad");
-                }
+            net.minecraft.component.type.NbtComponent nbtComp = stack.get(DataComponentTypes.CUSTOM_DATA);
+            if (nbtComp != null && nbtComp.contains("ArtifactRad")) {
+                totalRad += nbtComp.copyNbt().getFloat("ArtifactRad");
             }
         }
         return totalRad;
@@ -268,12 +264,9 @@ public class StalkerMod implements ModInitializer {
             ItemStack stack = player.getInventory().getStack(i);
             if (stack.isEmpty()) continue;
 
-            if (stack.getComponents().contains(DataComponentTypes.CUSTOM_DATA)) {
-                NbtCompound nbt = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).copyNbt();
-                
-                if (nbt.contains("ArtifactPsi")) {
-                    totalPsi += nbt.getFloat("ArtifactPsi");
-                }
+            net.minecraft.component.type.NbtComponent nbtComp = stack.get(DataComponentTypes.CUSTOM_DATA);
+            if (nbtComp != null && nbtComp.contains("ArtifactPsi")) {
+                totalPsi += nbtComp.copyNbt().getFloat("ArtifactPsi");
             }
         }
         return totalPsi;
@@ -365,30 +358,30 @@ public class StalkerMod implements ModInitializer {
 
         
         
-        net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
-            for (net.minecraft.server.network.ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                if (player.age % 20 == 0 && !player.isCreative() && !player.isSpectator()) {
-
-                    float invRad = getInventoryRadiation(player);
-
-                    if (invRad > 0) {
-                        boolean inRadZone = false;
-                        java.util.List<EffectZoneEntity> zones = player.getWorld().getEntitiesByClass(
-                                EffectZoneEntity.class, player.getBoundingBox().expand(0.1),
-                                zone -> zone.type == 1
-                        );
-                        if (!zones.isEmpty()) inRadZone = true;
-
-                        if (!inRadZone) {
-                            float damage = (invRad * invRad) / 5.0f;
-                            player.damage(player.getServerWorld().getDamageSources().magic(), damage);
-                            int radAmplifier = (int)(invRad / 2);
-                            player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.WITHER, 60, radAmplifier, false, false));
-                            player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.HUNGER, 60, radAmplifier));
-                        }
-                    }
-                }
-            }
-        });
+//        net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
+//            for (net.minecraft.server.network.ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+//                if (player.age % 20 == 0 && !player.isCreative() && !player.isSpectator()) {
+//
+//                    float invRad = getInventoryRadiation(player);
+//
+//                    if (invRad > 0) {
+//                        boolean inRadZone = false;
+//                        java.util.List<EffectZoneEntity> zones = player.getWorld().getEntitiesByClass(
+//                                EffectZoneEntity.class, player.getBoundingBox().expand(0.1),
+//                                zone -> zone.type == 1
+//                        );
+//                        if (!zones.isEmpty()) inRadZone = true;
+//
+//                        if (!inRadZone) {
+//                            float damage = (invRad * invRad) / 5.0f;
+//                            player.damage(player.getServerWorld().getDamageSources().magic(), damage);
+//                            int radAmplifier = (int)(invRad / 2);
+//                            player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.WITHER, 60, radAmplifier, false, false));
+//                            player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.HUNGER, 60, radAmplifier));
+//                        }
+//                    }
+//                }
+//            }
+//        });
     }
 }

@@ -589,25 +589,13 @@ public class ElementalAnomalyEntity extends Entity {
 
     @Override
     public net.minecraft.entity.EntityDimensions getDimensions(net.minecraft.entity.EntityPose pose) {
-        
         if (this.getWorld().isClient()) {
             var player = net.minecraft.client.MinecraftClient.getInstance().player;
-            
-            if (player != null && player.isCreative()) {
+            if (player != null && (player.isCreative() || player.isSpectator())) {
                 return net.minecraft.entity.EntityDimensions.fixed(1.0f, 1.0f);
             }
-            
             return net.minecraft.entity.EntityDimensions.fixed(0.0f, 0.0f);
         }
-
-        
-        boolean adminNearby = false;
-        for (PlayerEntity p : this.getWorld().getPlayers()) {
-            if (p.isCreative() && p.squaredDistanceTo(this) <= 400.0) {
-                adminNearby = true;
-                break;
-            }
-        }
-        return adminNearby ? net.minecraft.entity.EntityDimensions.fixed(1.0f, 1.0f) : net.minecraft.entity.EntityDimensions.fixed(0.0f, 0.0f);
+        return net.minecraft.entity.EntityDimensions.fixed(1.0f, 1.0f);
     }
 }

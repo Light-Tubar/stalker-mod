@@ -15,7 +15,6 @@ public class StalkerModConfigClient {
 
     private static final File CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "stalkermod_sounds.properties");
 
-    // Ползунок для выбросов
     public static final SimpleOption<Double> EMISSION_VOLUME_OPTION = new SimpleOption<>(
             "stalker.options.emission",
             SimpleOption.emptyTooltip(),
@@ -28,7 +27,6 @@ public class StalkerModConfigClient {
             }
     );
 
-    // Ползунок для аномалий
     public static final SimpleOption<Double> ANOMALY_VOLUME_OPTION = new SimpleOption<>(
             "stalker.options.anomaly",
             SimpleOption.emptyTooltip(),
@@ -49,7 +47,6 @@ public class StalkerModConfigClient {
                 emissionVolume = Double.parseDouble(props.getProperty("emissionVolume", "1.0"));
                 anomalyVolume = Double.parseDouble(props.getProperty("anomalyVolume", "1.0"));
 
-                // Синхронизируем графические ползунки с загруженными данными
                 EMISSION_VOLUME_OPTION.setValue(emissionVolume);
                 ANOMALY_VOLUME_OPTION.setValue(anomalyVolume);
             }

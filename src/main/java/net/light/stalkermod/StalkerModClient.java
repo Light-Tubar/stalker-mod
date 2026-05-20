@@ -175,8 +175,9 @@ public class StalkerModClient implements ClientModInitializer {
             });
         });
 
-        
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (client.isPaused()) return;
             GeigerSoundManager.tick(client);
             if (localEmissionTick > 0) localEmissionTick--;
             if (postEffectTick > 0) postEffectTick--;

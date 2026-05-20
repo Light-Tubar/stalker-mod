@@ -16,7 +16,8 @@
     "WorldMixin",
     "WorldRendererMixin",
     "AbstractSoundInstanceMixin",
-    "SoundOptionsScreenMixin"
+    "SoundOptionsScreenMixin",
+    "ItemStackMixin"
   ],
 
   "injectors": {

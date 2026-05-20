@@ -159,8 +159,11 @@ public class EffectZoneEntity extends Entity {
 
         float damage = (effectiveStrength * effectiveStrength) / 5.0f;
         Vec3d vel = entity.getVelocity();
-        entity.damage(world.getDamageSources().indirectMagic(this, this), damage);
-        entity.setVelocity(vel);
+
+        if (entity.damage(world.getDamageSources().indirectMagic(this, this), damage)) {
+            entity.setVelocity(vel);
+            entity.velocityModified = true;
+        }
 
         if (type == 1) { 
             int radAmplifier = (int)(effectiveStrength / 2);
@@ -187,7 +190,7 @@ public class EffectZoneEntity extends Entity {
         if (stack.isEmpty() && player.isSneaking() && player.isCreative()) {
             if (!this.getWorld().isClient()) {
                 this.discard();
-                player.sendMessage(Text.literal("§7Область деактивирована"), true);
+                player.sendMessage(Text.translatable("message.stalkermod.zone_deactivated"), true);
             }
             return ActionResult.SUCCESS;
         }
@@ -198,7 +201,7 @@ public class EffectZoneEntity extends Entity {
                 if (!this.getWorld().isClient()) {
                     this.strength = Math.min(10.0f, this.strength + 1.0f);
                     this.dataTracker.set(SYNC_STRENGTH, this.strength);
-                    player.sendMessage(Text.literal("§aСила зоны увеличена: §c" + this.strength), true);
+                    player.sendMessage(Text.translatable("message.stalkermod.zone_strength_increased", this.strength), true);
                 }
                 return ActionResult.SUCCESS;
             }
@@ -216,7 +219,7 @@ public class EffectZoneEntity extends Entity {
                 if (mode == 6) {
                     this.strength = Math.max(1.0f, this.strength - 1.0f);
                     this.dataTracker.set(SYNC_STRENGTH, this.strength);
-                    player.sendMessage(Text.literal("§eСила зоны уменьшена: §c" + this.strength), true);
+                    player.sendMessage(Text.translatable("message.stalkermod.zone_strength_decreased", this.strength), true);
                     return false;
                 }
             }

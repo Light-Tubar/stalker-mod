@@ -516,16 +516,14 @@ public class ElementalAnomalyEntity extends Entity {
 
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
-        
         if (player.isSneaking() && player.getStackInHand(hand).isEmpty()) {
             if (!this.getWorld().isClient()) {
                 this.discard();
-                player.sendMessage(Text.literal("§cАномалия ликвидирована"), true);
+                player.sendMessage(Text.translatable("message.stalkermod.elemental_discharged"), true);
             }
             return ActionResult.SUCCESS;
         }
 
-        
         if (player.isCreative()) {
             ItemStack stack = player.getStackInHand(hand);
             if (stack.isOf(StalkerMod.ANOMALY_SPAWNER)) {
@@ -534,14 +532,12 @@ public class ElementalAnomalyEntity extends Entity {
                     if (!this.getWorld().isClient()) {
                         this.radius = Math.min(10.0f, this.radius + 1.0f);
                         this.dataTracker.set(SYNC_RADIUS, this.radius);
-                        player.sendMessage(Text.literal("§bРадиус аномалии: §f" + this.radius), true);
+                        player.sendMessage(Text.translatable("message.stalkermod.elemental_radius_set", this.radius), true);
                     }
                     return ActionResult.SUCCESS;
                 }
             }
         }
-
-        
         return super.interact(player, hand);
     }
 
@@ -554,7 +550,7 @@ public class ElementalAnomalyEntity extends Entity {
                 if (mode == 6) {
                     this.radius = Math.max(1.0f, this.radius - 1.0f);
                     this.dataTracker.set(SYNC_RADIUS, this.radius);
-                    player.sendMessage(Text.literal("§bРадиус аномалии: §f" + this.radius), true);
+                    player.sendMessage(Text.translatable("message.stalkermod.elemental_radius_set", this.radius), true);
                     return false;
                 }
             }

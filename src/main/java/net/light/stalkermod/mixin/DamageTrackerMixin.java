@@ -27,7 +27,7 @@ public abstract class DamageTrackerMixin {
         String name = entity.getName().getString();
 
         if (EmissionManager.isEmissionDamage) {
-            cir.setReturnValue(Text.literal("§c" + name + " погиб от Выброса."));
+            cir.setReturnValue(Text.translatable("death.stalkermod.emission", name));
             return;
         }
 
@@ -41,14 +41,14 @@ public abstract class DamageTrackerMixin {
         if (attacker == null) return;
 
         if (attacker instanceof AnomalyEntity) {
-            cir.setReturnValue(Text.literal("§c" + name + " был разорван в Трамплине."));
+            cir.setReturnValue(Text.translatable("death.stalkermod.trampoline", name));
         } else if (attacker instanceof ElementalAnomalyEntity elem) {
-            if (elem.type == 0) cir.setReturnValue(Text.literal("§c" + name + " растворился в Газировке."));
-            else if (elem.type == 1) cir.setReturnValue(Text.literal("§c" + name + " сгорел в Жарке."));
-            else if (elem.type == 2) cir.setReturnValue(Text.literal("§c" + name + " получил разряд Электры."));
+            if (elem.type == 0) cir.setReturnValue(Text.translatable("death.stalkermod.acid", name));
+            else if (elem.type == 1) cir.setReturnValue(Text.translatable("death.stalkermod.burner", name));
+            else if (elem.type == 2) cir.setReturnValue(Text.translatable("death.stalkermod.electro", name));
         } else if (attacker instanceof EffectZoneEntity zone) {
-            if (zone.type == 1) cir.setReturnValue(Text.literal("§c" + name + " умер от лучевой болезни."));
-            else if (zone.type == 2) cir.setReturnValue(Text.literal("§c" + name + " сошел с ума от пси-излучения."));
+            if (zone.type == 1) cir.setReturnValue(Text.translatable("death.stalkermod.radiation", name));
+            else if (zone.type == 2) cir.setReturnValue(Text.translatable("death.stalkermod.psi", name));
         }
     }
 }

@@ -26,7 +26,7 @@ public class AnomalyEntity extends Entity {
 
     public float radius = 3.0f;
     public float damage = 16.0f;
-    public float repulsionForce = 1.0f;
+    public float repulsionForce = 0.5f;
 
     public AnomalyEntity(EntityType<?> type, World world) {
         super(type, world);
@@ -49,27 +49,24 @@ public class AnomalyEntity extends Entity {
         if (!player.isCreative()) return ActionResult.PASS;
         ItemStack stack = player.getStackInHand(hand);
 
-
-        
         if (stack.isEmpty() && player.isSneaking()) {
             if (!this.getWorld().isClient()) {
                 this.discard();
-                player.sendMessage(Text.literal("§7Аномалия разряжена"), true);
+                player.sendMessage(Text.translatable("message.stalkermod.anomaly_discharged"), true);
             }
             return ActionResult.SUCCESS;
         }
 
-        
         if (stack.isOf(StalkerMod.ANOMALY_SPAWNER)) {
             int mode = stack.getOrDefault(StalkerMod.MODE_COMPONENT, 0);
             if (mode == 6) {
                 if (!this.getWorld().isClient()) {
                     if (player.isSneaking()) {
                         this.damage = (this.damage >= 40.0f) ? 2.0f : this.damage + 2.0f;
-                        player.sendMessage(Text.literal("§cУрон: " + (this.damage / 2) + " серд."), true);
+                        player.sendMessage(Text.translatable("message.stalkermod.anomaly_damage_set", (this.damage / 2)), true);
                     } else {
                         this.radius = (this.radius >= 15.0f) ? 2.0f : this.radius + 1.0f;
-                        player.sendMessage(Text.literal("§eРадиус: " + this.radius + " бл."), true);
+                        player.sendMessage(Text.translatable("message.stalkermod.anomaly_radius_set", this.radius), true);
                     }
                 }
                 return ActionResult.SUCCESS;
@@ -255,9 +252,6 @@ public class AnomalyEntity extends Entity {
             entity.velocityModified = true;
             entity.velocityDirty = true;
 
-            if (entity instanceof LivingEntity living) {
-                living.damage(this.getWorld().getDamageSources().indirectMagic(this, this), this.damage);
-            }
         }
 
         isTriggered = false;
@@ -266,26 +260,21 @@ public class AnomalyEntity extends Entity {
 
     @Override
     public boolean damage(DamageSource source, float amount) {
-        
         if (source.getAttacker() instanceof PlayerEntity player && player.isCreative()) {
             ItemStack stack = player.getMainHandStack();
 
-            
             if (stack.isOf(StalkerMod.ANOMALY_SPAWNER)) {
                 int mode = stack.getOrDefault(StalkerMod.MODE_COMPONENT, 0);
                 if (mode == 6) {
                     this.repulsionForce = (this.repulsionForce >= 4.0f) ? 0.5f : this.repulsionForce + 0.5f;
-                    player.sendMessage(Text.literal("§bСила отброса: " + this.repulsionForce), true);
+                    player.sendMessage(Text.translatable("message.stalkermod.anomaly_repulsion_set", this.repulsionForce), true);
                     return false;
                 }
             }
 
-            
             this.discard();
             return true;
         }
-
-        
         return false;
     }
 

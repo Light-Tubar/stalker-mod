@@ -1,8 +1,61 @@
 {
   "item.stalker-mod.bolt": "Болт",
-  "item.stalker-mod.anomaly_spawner": "Пульт управления аномалиями",
+  "item.stalker-mod.anomaly_spawner": "Установщик аномалий",
   "entity.stalker-mod.bolt_entity": "Болт",
   "entity.stalker-mod.anomaly": "Аномалия",
   "entity.stalker-mod.elemental_anomaly": "Стихийная аномалия",
-  "entity.stalker-mod.effect_zone": "Зона воздействия"
+  "entity.stalker-mod.effect_zone": "Зона воздействия",
+
+  "death.stalkermod.emission": "§c%s погиб от Выброса.",
+  "death.stalkermod.trampoline": "§c%s был разорван в Трамплине.",
+  "death.stalkermod.acid": "§c%s растворился в Газировке.",
+  "death.stalkermod.burner": "§c%s сгорел в Жарке.",
+  "death.stalkermod.electro": "§c%s получил смертельный разряд Электры.",
+  "death.stalkermod.radiation": "§c%s умер от лучевой болезни.",
+  "death.stalkermod.psi": "§c%s сошел с ума от пси-излучения.",
+
+  "message.stalkermod.zone_deactivated": "§7Область деактивирована",
+  "message.stalkermod.zone_strength_increased": "§aСила зоны увеличена: §c%s",
+  "message.stalkermod.zone_strength_decreased": "§eСила зоны уменьшена: §c%s",
+  "message.stalkermod.anomaly_discharged": "§7Аномалия разряжена",
+  "message.stalkermod.anomaly_damage_set": "§cУрон: %s серд.",
+  "message.stalkermod.anomaly_radius_set": "§eРадиус: %s бл.",
+  "message.stalkermod.anomaly_repulsion_set": "§bСила отброса: %s",
+  "message.stalkermod.elemental_discharged": "§cАномалия ликвидирована",
+  "message.stalkermod.elemental_radius_set": "§bРадиус аномалии: §f%s",
+
+  "tooltip.stalkermod.spawner.hold_shift": "§8[Зажмите §fLSHIFT§8 для подсказки]",
+  "tooltip.stalkermod.spawner.title": "§6=== [Руководство по Установщику] ===",
+  "tooltip.stalkermod.spawner.mode": "§e• Режим пульта должен быть 6 (Настройка зон)",
+  "tooltip.stalkermod.spawner.delete": "§c• ПКМ + Shift (Пустая рука):§7 Полное удаление аномалии/зоны",
+  "tooltip.stalkermod.spawner.trampoline_r": "§a• ПКМ (по Трамплину):§7 Увеличить радиус действия (+1 бл.)",
+  "tooltip.stalkermod.spawner.trampoline_d": "§a• ПКМ + Shift (по Трамплину):§7 Увеличить урон (+1 серд.)",
+  "tooltip.stalkermod.spawner.trampoline_f": "§a• ЛКМ (по Трамплину):§7 Переключить силу отброса (0.5 - 4.0)",
+  "tooltip.stalkermod.spawner.elemental": "§b• ПКМ / ЛКМ (Жарка/Электра/Газировка):§7 Увеличить / Уменьшить радиус",
+  "tooltip.stalkermod.spawner.zones": "§d• ПКМ / ЛКМ (Радиация/Пси-зона):§7 Увеличить / Уменьшить силу",
+
+  "message.stalkermod.mode_format": "Режим: %s",
+  "message.stalkermod.mode.trampoline": "§eТрамплин",
+  "message.stalkermod.mode.acid": "§2Газировка",
+  "message.stalkermod.mode.burner": "§cЖарка",
+  "message.stalkermod.mode.electro": "§bЭлектра",
+  "message.stalkermod.mode.radiation": "§aРадиация",
+  "message.stalkermod.mode.psi": "§dПси-поле",
+  "message.stalkermod.mode.setting": "§bНастройка зон",
+
+  "message.stalkermod.trampoline_placed": "§eТрамплин установлен",
+  "message.stalkermod.anomaly_placed": "§aАномалия установлена",
+  "message.stalkermod.point2_set": "§dТочка 2 установлена.",
+  "message.stalkermod.zone_created": "§fОбласть создана!",
+  "message.stalkermod.no_selection": "§cСначала выделите область блоками!",
+  "message.stalkermod.tool_power_set": "§eМощность пульта установлена на: §c%s",
+  "message.stalkermod.point1_set": "§aТочка 1 установлена.",
+
+  "message.stalkermod.emission_started": "§cПринудительный запуск Выброса...",
+  "message.stalkermod.emission_stopped": "§aВыброс отменен.",
+
+  "tooltip.stalkermod.spawner.zone_guide_title": "§d=== [Создание Зон (Режим 4 и 5)] ===",
+  "tooltip.stalkermod.spawner.zone_step1": " §f1. ЛКМ по первому блоку: §7Задать Точку 1",
+  "tooltip.stalkermod.spawner.zone_step2": " §f2. ПКМ по второму блоку: §7Задать Точку 2",
+  "tooltip.stalkermod.spawner.zone_step3": " §f3. ПКМ в воздух (не по блоку): §aСоздать зону между точками"
 }

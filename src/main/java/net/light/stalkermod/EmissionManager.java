@@ -153,6 +153,18 @@ public class EmissionManager {
                 }
                 emissionTimer = nextEmissionInterval;
             }
+
+            ServerWorld overworld = server.getOverworld();
+            if (overworld != null) {
+                EmissionSaveData saveData = EmissionSaveData.get(overworld);
+
+                if (saveData.savedTimer != emissionTimer || saveData.savedIsEmissionDamage != isEmissionDamage) {
+                    saveData.savedTimer = emissionTimer;
+                    saveData.savedIsEmissionDamage = isEmissionDamage;
+
+                    saveData.markDirty();
+                }
+            }
         });
     }
 

@@ -53,9 +53,15 @@
 
   "message.stalkermod.emission_started": "§cForced Emission start...",
   "message.stalkermod.emission_stopped": "§aEmission cancelled.",
+  "message.stalkermod.emission_started_warning": "§cEmission started from the warning phase",
+  "message.stalkermod.emission_started_active": "§cEmission started from the active phase",
+  "message.stalkermod.emission_started_peak": "§cEmission started right before the blowout",
 
   "tooltip.stalkermod.spawner.zone_guide_title": "§d=== [Zone Creation (Mode 4 & 5)] ===",
   "tooltip.stalkermod.spawner.zone_step1": " §f1. LMB on 1st block: §7Set Point 1",
   "tooltip.stalkermod.spawner.zone_step2": " §f2. RMB on 2nd block: §7Set Point 2",
-  "tooltip.stalkermod.spawner.zone_step3": " §f3. RMB in the air: §aCreate zone between points"
+  "tooltip.stalkermod.spawner.zone_step3": " §f3. RMB in the air: §aCreate zone between points",
+
+  "gamerule.anomalySpawnMultiplier": "Anomaly Spawn Multiplier (%)",
+  "gamerule.anomalySpawnMultiplier.description": "Adjusts the frequency of anomalies in the world (0 to 200+). Setting to 0 completely disables anomaly generation."
 }

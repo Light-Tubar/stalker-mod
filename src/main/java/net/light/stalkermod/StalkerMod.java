@@ -31,6 +31,9 @@ import net.minecraft.sound.SoundEvent;
 import net.light.stalkermod.item.BoltItem;
 import net.light.stalkermod.entity.BoltEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
+import net.minecraft.world.GameRules;
 
 public class StalkerMod implements ModInitializer {
     public static final String MOD_ID = "stalker-mod";
@@ -49,6 +52,12 @@ public class StalkerMod implements ModInitializer {
                         .build()
         );
     }
+
+    public static final GameRules.Key<GameRules.IntRule> ANOMALY_SPAWN_MULTIPLIER = GameRuleRegistry.register(
+            "anomalySpawnMultiplier",
+            GameRules.Category.SPAWNING,
+            GameRuleFactory.createIntRule(100)
+    );
 
     public static final Identifier BOLT_THROW_ID = Identifier.of(MOD_ID, "bolt_throw");
     public static final SoundEvent BOLT_THROW = Registry.register(Registries.SOUND_EVENT, BOLT_THROW_ID, SoundEvent.of(BOLT_THROW_ID));
@@ -108,6 +117,11 @@ public class StalkerMod implements ModInitializer {
     public static final Identifier ELECTRO_ACTIVATE_ID = Identifier.of(MOD_ID, "electro_activate");
     public static final SoundEvent ELECTRO_ACTIVATE = SoundEvent.of(ELECTRO_ACTIVATE_ID);
 
+    public static final Identifier HEARTBEAT_ID = Identifier.of(MOD_ID, "heartbeat");
+    public static final SoundEvent HEARTBEAT = SoundEvent.of(HEARTBEAT_ID);
+    public static final Identifier TINNITUS_ID = Identifier.of(MOD_ID, "tinnitus");
+    public static final SoundEvent TINNITUS = SoundEvent.of(TINNITUS_ID);
+
     public static final EntityType<ElementalAnomalyEntity> ELEMENTAL_ANOMALY = Registry.register(
             Registries.ENTITY_TYPE, Identifier.of(MOD_ID, "elemental_anomaly"),
             EntityType.Builder.<ElementalAnomalyEntity>create(ElementalAnomalyEntity::new, SpawnGroup.MISC).dimensions(1.0f, 1.0f).build("elemental_anomaly"));
@@ -126,6 +140,9 @@ public class StalkerMod implements ModInitializer {
             Registries.ENTITY_TYPE, Identifier.of(MOD_ID, "effect_zone"),
             EntityType.Builder.<EffectZoneEntity>create(EffectZoneEntity::new, SpawnGroup.MISC).dimensions(1.0f, 1.0f).build("effect_zone")
     );
+
+    public static final net.minecraft.world.gen.feature.Feature<net.minecraft.world.gen.feature.DefaultFeatureConfig> ANOMALY_FEATURE =
+            new AnomalyFeature(net.minecraft.world.gen.feature.DefaultFeatureConfig.CODEC);
 
     public static final Item ANOMALY_SPAWNER = new Item(new Item.Settings().maxCount(1)) {
 
@@ -285,6 +302,8 @@ public class StalkerMod implements ModInitializer {
         Registry.register(Registries.SOUND_EVENT, EMISSION_SIREN_ID, EMISSION_SIREN);
         Registry.register(Registries.SOUND_EVENT, EMISSION_WIND_ID, EMISSION_WIND);
         Registry.register(Registries.SOUND_EVENT, EMISSION_BLOWOUT_ID, EMISSION_BLOWOUT);
+        Registry.register(Registries.SOUND_EVENT, HEARTBEAT_ID, HEARTBEAT);
+        Registry.register(Registries.SOUND_EVENT, TINNITUS_ID, TINNITUS);
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(content -> {
             content.add(ANOMALY_SPAWNER);
             content.add(BOLT_ITEM);
@@ -294,20 +313,49 @@ public class StalkerMod implements ModInitializer {
         net.minecraft.registry.Registry.register(net.minecraft.registry.Registries.SOUND_EVENT, GEIGER_3_ID, GEIGER_3);
         net.minecraft.registry.Registry.register(net.minecraft.registry.Registries.SOUND_EVENT, GEIGER_4_ID, GEIGER_4);
 
+        Registry.register(Registries.FEATURE, Identifier.of(MOD_ID, "world_anomalies"), ANOMALY_FEATURE);
+        net.fabricmc.fabric.api.biome.v1.BiomeModifications.addFeature(
+                net.fabricmc.fabric.api.biome.v1.BiomeSelectors.all(),
+                net.minecraft.world.gen.GenerationStep.Feature.SURFACE_STRUCTURES,
+                net.minecraft.registry.RegistryKey.of(net.minecraft.registry.RegistryKeys.PLACED_FEATURE, Identifier.of(MOD_ID, "world_anomalies"))
+        );
+
         net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             dispatcher.register(net.minecraft.server.command.CommandManager.literal("emission")
                     .requires(source -> source.hasPermissionLevel(2))
+
                     .then(net.minecraft.server.command.CommandManager.literal("start")
                             .executes(context -> {
                                 EmissionManager.emissionTimer = 2600;
-
                                 context.getSource().sendFeedback(() -> Text.translatable("message.stalkermod.emission_started"), true);
                                 return 1;
-                            }))
+                            })
+
+                            .then(net.minecraft.server.command.CommandManager.literal("warning")
+                                    .executes(context -> {
+                                        EmissionManager.emissionTimer = 2410;
+                                        context.getSource().sendFeedback(() -> Text.translatable("message.stalkermod.emission_started_warning"), true);
+                                        return 1;
+                                    }))
+
+                            .then(net.minecraft.server.command.CommandManager.literal("active")
+                                    .executes(context -> {
+                                        EmissionManager.emissionTimer = 1210;
+                                        context.getSource().sendFeedback(() -> Text.translatable("message.stalkermod.emission_started_active"), true);
+                                        return 1;
+                                    }))
+
+                            .then(net.minecraft.server.command.CommandManager.literal("peak")
+                                    .executes(context -> {
+                                        EmissionManager.emissionTimer = 240;
+                                        context.getSource().sendFeedback(() -> Text.translatable("message.stalkermod.emission_started_peak"), true);
+                                        return 1;
+                                    }))
+                    )
+
                     .then(net.minecraft.server.command.CommandManager.literal("stop")
                             .executes(context -> {
                                 EmissionManager.emissionTimer = -1;
-
                                 context.getSource().sendFeedback(() -> Text.translatable("message.stalkermod.emission_stopped"), true);
                                 return 1;
                             }))
@@ -356,8 +404,9 @@ public class StalkerMod implements ModInitializer {
 
                 EmissionManager.emissionTimer = data.savedTimer;
                 EmissionManager.isEmissionDamage = data.savedIsEmissionDamage;
+                EmissionManager.postEffectTimer = data.savedPostEffectTimer;
 
-                LOGGER.info("Выброс успешно восстановлен из сохранения! Таймер: " + EmissionManager.emissionTimer);
+                LOGGER.info("Данные Выброса успешно загружены! Таймер: " + EmissionManager.emissionTimer + ", Остывание: " + EmissionManager.postEffectTimer);
             }
         });
     }

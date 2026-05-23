@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin {
 
-    // Вырезаем видимые летящие капли
     @Inject(method = "renderWeather", at = @At("HEAD"), cancellable = true)
     private void cancelEmissionRainDrops(LightmapTextureManager manager, float tickDelta, double cameraX, double cameraY, double cameraZ, CallbackInfo ci) {
         if (StalkerModClient.localEmissionTick > 0 || StalkerModClient.postEffectTick > 0) {
@@ -20,7 +19,6 @@ public class WorldRendererMixin {
         }
     }
 
-    // Вырезаем звуки дождя и брызги на земле
     @Inject(method = "tickRainSplashing", at = @At("HEAD"), cancellable = true)
     private void cancelEmissionRainSounds(Camera camera, CallbackInfo ci) {
         if (StalkerModClient.localEmissionTick > 0 || StalkerModClient.postEffectTick > 0) {

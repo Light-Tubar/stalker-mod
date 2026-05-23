@@ -53,9 +53,15 @@
 
   "message.stalkermod.emission_started": "§cПринудительный запуск Выброса...",
   "message.stalkermod.emission_stopped": "§aВыброс отменен.",
+  "message.stalkermod.emission_started_warning": "§cВыброс запущен с фазы оповещения",
+  "message.stalkermod.emission_started_active": "§cВыброс запущен с активной фазы",
+  "message.stalkermod.emission_started_peak": "§cВыброс запущен перед самым ударом",
 
   "tooltip.stalkermod.spawner.zone_guide_title": "§d=== [Создание Зон (Режим 4 и 5)] ===",
   "tooltip.stalkermod.spawner.zone_step1": " §f1. ЛКМ по первому блоку: §7Задать Точку 1",
   "tooltip.stalkermod.spawner.zone_step2": " §f2. ПКМ по второму блоку: §7Задать Точку 2",
-  "tooltip.stalkermod.spawner.zone_step3": " §f3. ПКМ в воздух (не по блоку): §aСоздать зону между точками"
+  "tooltip.stalkermod.spawner.zone_step3": " §f3. ПКМ в воздух (не по блоку): §aСоздать зону между точками",
+
+  "gamerule.anomalySpawnMultiplier": "Множитель спавна аномалий (%)",
+  "gamerule.anomalySpawnMultiplier.description": "Регулирует количество аномалий при генерации мира (от 0 до 200+). Значение 0 полностью отключает появление аномалий."
 }

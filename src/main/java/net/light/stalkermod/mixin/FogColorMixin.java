@@ -1,31 +1,55 @@
 package net.light.stalkermod.mixin;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.light.stalkermod.StalkerModClient;
 import net.minecraft.client.render.BackgroundRenderer;
+import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(BackgroundRenderer.class)
 public class FogColorMixin {
 
-    @Inject(method = "applyFogColor", at = @At("TAIL"))
-    private static void onApplyFogColor(CallbackInfo ci) {
-        
-        if (StalkerModClient.localEmissionTick > 0) {
+    @Shadow private static float red;
+    @Shadow private static float green;
+    @Shadow private static float blue;
 
-            
-            float[] fog = RenderSystem.getShaderFogColor();
-            net.minecraft.util.math.Vec3d fogVec = new net.minecraft.util.math.Vec3d(fog[0], fog[1], fog[2]);
+    @ModifyArgs(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;clearColor(FFFF)V"))
+    private static void modifyClearColor(Args args) {
+        if (StalkerModClient.localEmissionTick > 0 || StalkerModClient.postEffectTick > 0) {
+            float r = args.get(0);
+            float g = args.get(1);
+            float b = args.get(2);
 
-            
-            net.minecraft.util.math.Vec3d newColor = StalkerModClient.getEmissionSkyColor(fogVec);
+            Vec3d customColor = StalkerModClient.getEmissionSkyColor(new Vec3d(r, g, b));
 
-            
-            RenderSystem.setShaderFogColor((float)newColor.x, (float)newColor.y, (float)newColor.z);
-            RenderSystem.clearColor((float)newColor.x, (float)newColor.y, (float)newColor.z, 0.0f);
+            args.set(0, (float) customColor.x);
+            args.set(1, (float) customColor.y);
+            args.set(2, (float) customColor.z);
+
+            red = (float) customColor.x;
+            green = (float) customColor.y;
+            blue = (float) customColor.z;
+        }
+        else if (StalkerModClient.psiIntensity > 0) {
+            float psi = StalkerModClient.psiIntensity;
+            float r = args.get(0);
+            float g = args.get(1);
+            float b = args.get(2);
+
+            float outR = r * (1.0f - psi) + (0.05f * psi);
+            float outG = g * (1.0f - psi) + (0.05f * psi);
+            float outB = b * (1.0f - psi) + (0.15f * psi);
+
+            args.set(0, outR);
+            args.set(1, outG);
+            args.set(2, outB);
+
+            red = outR;
+            green = outG;
+            blue = outB;
         }
     }
 }

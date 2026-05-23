@@ -29,7 +29,6 @@ public abstract class LivingEntityMixin implements CustomAttackerTracker {
     @Inject(method = "damage", at = @At("HEAD"))
     private void captureAttacker(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (source != null && source.getAttacker() != null) {
-            // Сохраняем любую сущность, которая нанесла урон (включая наши аномалии)
             this.stalkermod$setLastAttacker(source.getAttacker());
         }
     }

@@ -13,15 +13,21 @@ public class SkyColorMixin {
 
     @Inject(method = "getSkyColor", at = @At("RETURN"), cancellable = true)
     private void onGetSkyColor(Vec3d cameraPos, float tickDelta, CallbackInfoReturnable<Vec3d> cir) {
-        if (StalkerModClient.localEmissionTick > 0) {
+        if (StalkerModClient.localEmissionTick > 0 || StalkerModClient.postEffectTick > 0) {
             cir.setReturnValue(StalkerModClient.getEmissionSkyColor(cir.getReturnValue()));
+        }
+        else if (StalkerModClient.psiIntensity > 0 && StalkerModClient.isShaderActive()) {
+            cir.setReturnValue(new Vec3d(0.0, 1.0, StalkerModClient.psiIntensity));
         }
     }
 
     @Inject(method = "getCloudsColor", at = @At("RETURN"), cancellable = true)
     private void onGetCloudsColor(float tickDelta, CallbackInfoReturnable<Vec3d> cir) {
-        if (StalkerModClient.localEmissionTick > 0) {
+        if (StalkerModClient.localEmissionTick > 0 || StalkerModClient.postEffectTick > 0) {
             cir.setReturnValue(StalkerModClient.getEmissionSkyColor(cir.getReturnValue()));
+        }
+        else if (StalkerModClient.psiIntensity > 0 && StalkerModClient.isShaderActive()) {
+            cir.setReturnValue(new Vec3d(0.0, 1.0, StalkerModClient.psiIntensity));
         }
     }
 }

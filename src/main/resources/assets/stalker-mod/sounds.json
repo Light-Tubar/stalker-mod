@@ -106,6 +106,19 @@
       "stalker-mod:bolt_hit1",
       "stalker-mod:bolt_hit2"
     ]
+  },
+  "heartbeat": {
+    "category": "player",
+    "sounds": [
+      "stalker-mod:heartbeat1",
+      "stalker-mod:heartbeat2"
+    ]
+  },
+  "tinnitus": {
+    "category": "player",
+    "sounds": [
+      "stalker-mod:tinnitus"
+    ]
   }
 }
 

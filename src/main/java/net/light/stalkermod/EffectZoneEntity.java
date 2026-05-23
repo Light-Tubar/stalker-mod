@@ -165,18 +165,18 @@ public class EffectZoneEntity extends Entity {
             entity.velocityModified = true;
         }
 
-        if (type == 1) { 
+        if (type == 1) {
             int radAmplifier = (int)(effectiveStrength / 2);
             entity.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 60, radAmplifier, false, false));
             entity.addStatusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 60, radAmplifier));
-        } else { 
-            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 120, 0));
-            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 1));
+        } else {
+            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 120, 0, false, false));
+            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 1, false, false));
 
             if (effectiveStrength >= 3.0f) {
                 int intervalSeconds = Math.max(1, 8 - (int)effectiveStrength);
                 if (this.age % (intervalSeconds * 20) == 0) {
-                    entity.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 40, 0));
+                    entity.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 40, 0, false, false));
                 }
             }
         }

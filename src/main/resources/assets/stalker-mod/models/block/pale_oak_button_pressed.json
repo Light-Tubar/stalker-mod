@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/button_pressed",
+  "textures": {
+    "texture": "stalker-mod:block/pale_oak_planks"
+  }
+}

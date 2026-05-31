@@ -1,0 +1,7 @@
+﻿{
+  "parent": "stalker-mod:block/template_shelf_unconnected",
+  "textures": {
+    "all": "stalker-mod:block/spruce_shelf",
+    "particle": "minecraft:block/stripped_spruce_log"
+  }
+}

@@ -17,7 +17,6 @@ import java.util.List;
 
 public class EmissionManager {
     public static int emissionTimer = -1;
-    public static int nextEmissionInterval = 72000;
     public static boolean isEmissionDamage = false;
     public static int postEffectTimer = -1;
 
@@ -31,6 +30,20 @@ public class EmissionManager {
         });
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {
+
+            boolean emissionsEnabled = server.getGameRules().getBoolean(StalkerMod.EMISSION_ENABLED);
+            int currentInterval = server.getGameRules().getInt(StalkerMod.EMISSION_INTERVAL);
+
+            if (!emissionsEnabled) {
+                if (emissionTimer > 0) {
+                    emissionTimer = -1;
+                }
+            } else {
+                if (emissionTimer == -1 && postEffectTimer <= 0) {
+                    emissionTimer = currentInterval;
+                }
+            }
+
             if (postEffectTimer > 0) {
                 postEffectTimer--;
             }
@@ -41,7 +54,7 @@ public class EmissionManager {
                 if (emissionTimer == 2400) {
                     for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                         if (player.getServerWorld().getRegistryKey() != World.OVERWORLD) continue;
-                        player.sendMessage(Text.literal("§c[ВНИМАНИЕ] Зафиксирован всплеск пси-активности. Ищите укрытие!"), false);
+                        player.sendMessage(Text.translatable("message.stalkermod.emission_warning"), false);
                         net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, new net.light.stalkermod.network.EmissionPayload(2400));
 
                         double dx = (player.getServerWorld().random.nextDouble() - 0.5) * 30.0;
@@ -101,28 +114,30 @@ public class EmissionManager {
 
                         net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, new net.light.stalkermod.network.EmissionPayload(emissionTimer));
 
-                        ServerWorld world = player.getServerWorld();
-                        Box animalBox = player.getBoundingBox().expand(48.0);
-                        List<AnimalEntity> animals = world.getEntitiesByClass(AnimalEntity.class, animalBox, a -> true);
+                        if (emissionTimer % 60 == 0) {
+                            ServerWorld world = player.getServerWorld();
+                            Box animalBox = player.getBoundingBox().expand(32.0);
+                            List<AnimalEntity> animals = world.getEntitiesByClass(AnimalEntity.class, animalBox, a -> true);
 
-                        for (AnimalEntity animal : animals) {
-                            BlockPos pos = animal.getBlockPos();
-                            if (world.isSkyVisible(pos)) {
-                                if (!animal.getNavigation().isFollowingPath()) {
-                                    BlockPos safePos = null;
-                                    for (int i = 0; i < 15; i++) {
-                                        BlockPos checkPos = pos.add(world.random.nextInt(31) - 15, world.random.nextInt(7) - 3, world.random.nextInt(31) - 15);
-                                        if (!world.isSkyVisible(checkPos) && world.getBlockState(checkPos).isAir() && world.getBlockState(checkPos.down()).isSolid()) {
-                                            safePos = checkPos;
-                                            break;
+                            for (AnimalEntity animal : animals) {
+                                BlockPos pos = animal.getBlockPos();
+                                if (world.isSkyVisible(pos)) {
+                                    if (!animal.getNavigation().isFollowingPath()) {
+                                        BlockPos safePos = null;
+                                        for (int i = 0; i < 10; i++) {
+                                            BlockPos checkPos = pos.add(world.random.nextInt(31) - 15, world.random.nextInt(7) - 3, world.random.nextInt(31) - 15);
+                                            if (!world.isSkyVisible(checkPos) && world.getBlockState(checkPos).isAir() && world.getBlockState(checkPos.down()).isSolid()) {
+                                                safePos = checkPos;
+                                                break;
+                                            }
+                                        }
+                                        if (safePos != null) {
+                                            animal.getNavigation().startMovingTo(safePos.getX(), safePos.getY(), safePos.getZ(), 1.4);
                                         }
                                     }
-                                    if (safePos != null) {
-                                        animal.getNavigation().startMovingTo(safePos.getX(), safePos.getY(), safePos.getZ(), 1.4);
-                                    }
+                                } else {
+                                    animal.getNavigation().stop();
                                 }
-                            } else {
-                                animal.getNavigation().stop();
                             }
                         }
                     }
@@ -134,13 +149,14 @@ public class EmissionManager {
                         playPersonalSound(player, StalkerMod.EMISSION_EARTHQUAKE, 15.0f, 0.6f, 0.0, -25.0, 0.0);
                     }
                 }
-                if (emissionTimer <= 30 && emissionTimer > 0) {
-                    for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                        if (player.getServerWorld().getRegistryKey() != World.OVERWORLD) continue;
-                        if (player.isCreative() || player.isSpectator()) continue;
 
-                        if (!isPlayerSafe(player)) {
-                            if (emissionTimer % 10 == 0) {
+                if (emissionTimer <= 30 && emissionTimer > 0) {
+                    if (emissionTimer % 10 == 0) {
+                        for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                            if (player.getServerWorld().getRegistryKey() != World.OVERWORLD) continue;
+                            if (player.isCreative() || player.isSpectator()) continue;
+
+                            if (!isPlayerSafe(player)) {
                                 playPersonalSound(player, StalkerMod.HEARTBEAT, 2.0f, 1.0f, 0.0, 0.0, 0.0);
                             }
                         }
@@ -164,22 +180,20 @@ public class EmissionManager {
                         player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 300, 0, false, false));
 
                         playPersonalSound(player, StalkerMod.TINNITUS, 1.5f, 1.0f, 0.0, 0.0, 0.0);
-                        player.sendMessage(Text.literal("§aВыброс миновал. Вы в безопасности."), false);
+                        player.sendMessage(Text.translatable("message.stalkermod.emission_survived"), false);
                     }
                     else {
                         isEmissionDamage = true;
-
                         player.damage(player.getServerWorld().getDamageSources().magic(), 9999999.0f);
-
                         isEmissionDamage = false;
-                        player.sendMessage(Text.literal("§4Ваша нервная система выжжена Выбросом."), false);
+                        player.sendMessage(Text.translatable("message.stalkermod.emission_death"), false);
                     }
                     net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, new net.light.stalkermod.network.EmissionPayload(0));
                 }
                 server.getOverworld().setWeather(0, 180, true, false);
 
                 postEffectTimer = 1800;
-                emissionTimer = nextEmissionInterval;
+                emissionTimer = currentInterval;
             }
 
             ServerWorld overworld = server.getOverworld();
@@ -209,9 +223,15 @@ public class EmissionManager {
 
     private static boolean isPlayerSafe(ServerPlayerEntity player) {
         ServerWorld world = player.getServerWorld();
-        BlockPos pos = player.getBlockPos();
-        if (world.isSkyVisible(pos) || world.isSkyVisible(pos.up())) return false;
+        Box box = player.getBoundingBox();
 
+        for (EffectZoneEntity zone : world.getEntitiesByClass(EffectZoneEntity.class, box.expand(1.0), z -> z.type == 3)) {
+            if (zone.getZoneBox().intersects(box)) {
+                return true;
+            }
+        }
+
+        BlockPos pos = player.getBlockPos();
         int wallCount = 0;
         int[][] directions = {{0,-1},{0,1},{-1,0},{1,0},{-1,-1},{1,-1},{-1,1},{1,1}};
         int headY = pos.getY() + 1;

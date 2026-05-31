@@ -1,0 +1,7 @@
+{
+  "parent": "stalker-mod:block/template_shelf_left",
+  "textures": {
+    "all": "stalker-mod:block/pale_oak_shelf",
+    "particle": "stalker-mod:block/stripped_pale_oak_log"
+  }
+}

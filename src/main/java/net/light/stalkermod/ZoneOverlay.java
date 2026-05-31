@@ -29,38 +29,39 @@ public class ZoneOverlay {
             if (client.isPaused() || client.player == null) return;
             PlayerEntity player = client.player;
 
-            float activeRadZoneStrength = 0.0f;
-            float activePsiZoneStrength = 0.0f;
+            if (player.age % 10 == 0) {
+                float activeRadZoneStrength = 0.0f;
+                float activePsiZoneStrength = 0.0f;
 
+                java.util.List<EffectZoneEntity> zones = player.getWorld().getEntitiesByClass(
+                        EffectZoneEntity.class, player.getBoundingBox().expand(50.0),
+                        zone -> zone.type == 1 || zone.type == 2
+                );
 
-            java.util.List<EffectZoneEntity> zones = player.getWorld().getEntitiesByClass(
-                    EffectZoneEntity.class, player.getBoundingBox().expand(50.0),
-                    zone -> zone.type == 1 || zone.type == 2
-            );
-
-            for (EffectZoneEntity zone : zones) {
-                if (zone.getZoneBox().contains(player.getPos())) {
-                    if (zone.type == 1 && zone.strength > activeRadZoneStrength) activeRadZoneStrength = zone.strength;
-                    if (zone.type == 2 && zone.strength > activePsiZoneStrength) activePsiZoneStrength = zone.strength;
+                for (EffectZoneEntity zone : zones) {
+                    if (zone.getZoneBox().contains(player.getPos())) {
+                        if (zone.type == 1 && zone.strength > activeRadZoneStrength) activeRadZoneStrength = zone.strength;
+                        if (zone.type == 2 && zone.strength > activePsiZoneStrength) activePsiZoneStrength = zone.strength;
+                    }
                 }
+
+                float invRad = StalkerMod.getInventoryRadiation(player);
+                float invPsi = StalkerMod.getInventoryPsi(player);
+
+                float effectiveRadStrength = Math.max(0.0f, activeRadZoneStrength + invRad);
+                float effectivePsiStrength = Math.max(0.0f, activePsiZoneStrength + invPsi);
+
+                targetRadAlpha = effectiveRadStrength > 0 ? Math.min(255, effectiveRadStrength * 25) : 0;
+                targetPsiAlpha = effectivePsiStrength > 0 ? Math.min(255, effectivePsiStrength * 25) : 0;
+
+                radSpeed = effectiveRadStrength > 0
+                        ? Math.min(0.02f, 0.0001f * (float) Math.pow(1.8, effectiveRadStrength))
+                        : 0.005f;
+
+                psiSpeed = effectivePsiStrength > 0
+                        ? Math.min(0.02f, 0.0001f * (float) Math.pow(1.8, effectivePsiStrength))
+                        : 0.005f;
             }
-
-            float invRad = StalkerMod.getInventoryRadiation(player);
-            float invPsi = StalkerMod.getInventoryPsi(player);
-
-            float effectiveRadStrength = Math.max(0.0f, activeRadZoneStrength + invRad);
-            float effectivePsiStrength = Math.max(0.0f, activePsiZoneStrength + invPsi);
-
-            targetRadAlpha = effectiveRadStrength > 0 ? Math.min(255, effectiveRadStrength * 25) : 0;
-            targetPsiAlpha = effectivePsiStrength > 0 ? Math.min(255, effectivePsiStrength * 25) : 0;
-
-            radSpeed = effectiveRadStrength > 0
-                    ? Math.min(0.02f, 0.0001f * (float) Math.pow(1.8, effectiveRadStrength))
-                    : 0.005f;
-
-            psiSpeed = effectivePsiStrength > 0
-                    ? Math.min(0.02f, 0.0001f * (float) Math.pow(1.8, effectivePsiStrength))
-                    : 0.005f;
             acidFlash = Math.max(0.0f, acidFlash - 0.05f);
         });
 

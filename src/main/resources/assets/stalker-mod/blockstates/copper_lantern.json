@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "hanging=false": {
+      "model": "stalker-mod:block/copper_lantern"
+    },
+    "hanging=true": {
+      "model": "stalker-mod:block/copper_lantern_hanging"
+    }
+  }
+}

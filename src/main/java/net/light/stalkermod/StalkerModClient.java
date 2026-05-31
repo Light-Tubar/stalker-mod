@@ -4,10 +4,13 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.light.stalkermod.client.render.ShelfBlockEntityRenderer;
 import net.minecraft.client.render.entity.EmptyEntityRenderer;
 import net.light.stalkermod.network.EmissionPayload;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.minecraft.client.render.RenderLayer;
 
 public class StalkerModClient implements ClientModInitializer {
 
@@ -25,38 +28,49 @@ public class StalkerModClient implements ClientModInitializer {
     private static boolean cachedShaderState = false;
     private static long lastCheckTime = 0;
 
+    private static Class<?> irisApiClass = null;
+    private static java.lang.reflect.Method getInstanceMethod = null;
+    private static java.lang.reflect.Method isShaderPackInUseMethod = null;
+    private static java.lang.reflect.Method getShaderPackNameMethod = null;
+    private static boolean reflectionInitialized = false;
+
+    private static void initReflection() {
+        if (reflectionInitialized) return;
+        reflectionInitialized = true;
+        if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("iris")) return;
+        try {
+            irisApiClass = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
+            getInstanceMethod = irisApiClass.getMethod("getInstance");
+            isShaderPackInUseMethod = irisApiClass.getMethod("isShaderPackInUse");
+            getShaderPackNameMethod = irisApiClass.getMethod("getShaderPackName");
+        } catch (Throwable ignored) {}
+    }
+
     public static boolean isShaderActive() {
         long currentTime = System.currentTimeMillis();
-
-        if (currentTime - lastCheckTime < 1000) {
-            return cachedShaderState;
-        }
+        if (currentTime - lastCheckTime < 1000) return cachedShaderState;
         lastCheckTime = currentTime;
 
-        if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("iris")) {
+        initReflection();
+        if (irisApiClass == null) {
             cachedShaderState = false;
             return false;
         }
 
         try {
-            Class<?> apiClass = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
-            Object api = apiClass.getMethod("getInstance").invoke(null);
-
-            boolean isPackInUse = (boolean) apiClass.getMethod("isShaderPackInUse").invoke(api);
+            Object api = getInstanceMethod.invoke(null);
+            boolean isPackInUse = (boolean) isShaderPackInUseMethod.invoke(api);
             if (!isPackInUse) {
                 cachedShaderState = false;
                 return false;
             }
-
-            String name = apiClass.getMethod("getShaderPackName").invoke(api).toString().toLowerCase();
+            String name = getShaderPackNameMethod.invoke(api).toString().toLowerCase();
             if (name.contains("internal") || name.contains("vanilla") || name.contains("empty")) {
                 cachedShaderState = false;
                 return false;
             }
-
             cachedShaderState = true;
             return true;
-
         } catch (Throwable t) {
             cachedShaderState = true;
             return true;
@@ -133,11 +147,49 @@ public class StalkerModClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         StalkerModConfigClient.load();
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(),
+                ModBlocks.PALE_OAK_SAPLING,
+                ModBlocks.PALE_OAK_LEAVES,
+                ModBlocks.PALE_OAK_DOOR,
+                ModBlocks.PALE_OAK_TRAPDOOR,
+                ModBlocks.PALE_HANGING_MOSS,
+                ModBlocks.PALE_HANGING_MOSS_TIP);
+
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(),
+                ModBlocks.COPPER_BARS,
+                ModBlocks.EXPOSED_COPPER_BARS,
+                ModBlocks.WEATHERED_COPPER_BARS,
+                ModBlocks.OXIDIZED_COPPER_BARS);
+
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(),
+                ModBlocks.COPPER_CHAIN,
+                ModBlocks.EXPOSED_COPPER_CHAIN,
+                ModBlocks.WEATHERED_COPPER_CHAIN,
+                ModBlocks.OXIDIZED_COPPER_CHAIN);
+
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(),
+                ModBlocks.COPPER_LANTERN,
+                ModBlocks.EXPOSED_COPPER_LANTERN,
+                ModBlocks.WEATHERED_COPPER_LANTERN,
+                ModBlocks.OXIDIZED_COPPER_LANTERN);
         ZoneOverlay.init();
         EntityRendererRegistry.register(StalkerMod.ANOMALY_ENTITY, EmptyEntityRenderer::new);
         EntityRendererRegistry.register(StalkerMod.ELEMENTAL_ANOMALY, EmptyEntityRenderer::new);
         EntityRendererRegistry.register(StalkerMod.EFFECT_ZONE_ENTITY, EffectZoneEntityRenderer::new);
         EntityRendererRegistry.register(net.light.stalkermod.StalkerMod.BOLT_ENTITY_TYPE, net.light.stalkermod.BoltEntityRenderer::new);
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getCutout(),
+                ModBlocks.PALE_MOSS_CARPET
+        );
+        net.minecraft.client.render.block.entity.BlockEntityRendererFactories.register(
+                StalkerMod.SHELF_BLOCK_ENTITY,
+                net.light.stalkermod.client.render.ShelfBlockEntityRenderer::new
+        );
+
+        net.minecraft.client.render.block.entity.BlockEntityRendererFactories.register(
+                StalkerMod.COPPER_GOLEM_STATUE_ENTITY,
+                net.light.stalkermod.client.render.CopperGolemStatueRenderer::new
+        );
 
         ClientPlayNetworking.registerGlobalReceiver(EmissionPayload.ID, (payload, context) -> {
             context.client().execute(() -> {
@@ -184,9 +236,9 @@ public class StalkerModClient implements ClientModInitializer {
             }
 
             if (inPsi) {
-                if (psiIntensity < 1.0f) psiIntensity += 0.05f; // Плавно накрывает
+                if (psiIntensity < 1.0f) psiIntensity += 0.05f;
             } else {
-                if (psiIntensity > 0.0f) psiIntensity -= 0.05f; // Плавно отпускает
+                if (psiIntensity > 0.0f) psiIntensity -= 0.05f;
             }
             psiIntensity = net.minecraft.util.math.MathHelper.clamp(psiIntensity, 0.0f, 1.0f);
         });

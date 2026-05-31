@@ -35,12 +35,12 @@ public class AnomalyFeature extends Feature<DefaultFeatureConfig> {
             if (world.getBlockState(surfacePos.down()).isOpaqueFullCube(world, surfacePos.down()) && world.isAir(surfacePos)) {
 
                 boolean isSwamp = world.getBiome(surfacePos).matchesKey(BiomeKeys.SWAMP) || world.getBiome(surfacePos).matchesKey(BiomeKeys.MANGROVE_SWAMP);
-                if (isSwamp && random.nextFloat() < (0.02f * mult)) { // 10% шанс для болота
+                if (isSwamp && random.nextFloat() < (0.02f * mult)) {
                     spawnElemental(world, surfacePos, 0, 2.0f);
                     return true;
                 }
 
-                if (surfacePos.getY() > 100 && random.nextFloat() < (0.05f * mult)) { // 15% шанс для гор
+                if (surfacePos.getY() > 100 && random.nextFloat() < (0.05f * mult)) {
                     spawnElemental(world, surfacePos, 2, 4.0f);
                     return true;
                 }

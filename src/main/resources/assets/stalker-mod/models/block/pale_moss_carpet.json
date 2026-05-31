@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/carpet",
+  "textures": {
+    "wool": "stalker-mod:block/pale_moss_carpet"
+  }
+}

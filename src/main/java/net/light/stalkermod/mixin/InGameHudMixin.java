@@ -42,7 +42,7 @@ public class InGameHudMixin {
             if (client.player != null && !client.player.isCreative() && !client.player.isSpectator()) {
                 boolean isUnsafe = client.world.isSkyVisible(client.player.getBlockPos()) || client.world.isSkyVisible(client.player.getBlockPos().up());
                 if (isUnsafe) {
-                    float t = 1.0f - (eTick / 30.0f); //
+                    float t = 1.0f - (eTick / 30.0f);
                     int a = (int) (t * 200);
                     context.fill(0, 0, width, height, (a << 24) | 0xFF0000);
                 }

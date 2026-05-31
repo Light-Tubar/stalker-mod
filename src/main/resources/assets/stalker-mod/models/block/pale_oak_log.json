@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "stalker-mod:block/pale_oak_log_top",
+    "side": "stalker-mod:block/pale_oak_log"
+  }
+}

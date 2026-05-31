@@ -77,8 +77,9 @@ public class AnomalyEntity extends Entity {
 
     @Override
     public void tick() {
-        super.tick();
-        this.calculateDimensions();
+        if (this.age % 10 == 0) {
+            this.calculateDimensions();
+        }
 
         
 

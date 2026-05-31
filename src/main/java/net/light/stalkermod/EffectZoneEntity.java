@@ -74,8 +74,9 @@ public class EffectZoneEntity extends Entity {
 
     @Override
     public void tick() {
-        super.tick();
-        this.calculateDimensions();
+        if (this.age % 10 == 0) {
+            this.calculateDimensions();
+        }
 
         if (this.getWorld().isClient()) {
             this.pos1 = this.dataTracker.get(SYNC_P1);
@@ -117,15 +118,9 @@ public class EffectZoneEntity extends Entity {
             }
         }
 
-        
-        
-        
-
-        
-        
         if (this.getWorld().isClient()) {
-            
-            if (this.getRandom().nextFloat() < (0.05f * this.strength)) {
+
+            if (this.type != 3 && this.getRandom().nextFloat() < (0.05f * this.strength)) {
                 double x = fullZoneBox.minX + this.getRandom().nextDouble() * (fullZoneBox.maxX - fullZoneBox.minX);
                 double y = fullZoneBox.minY + this.getRandom().nextDouble() * (fullZoneBox.maxY - fullZoneBox.minY);
                 double z = fullZoneBox.minZ + this.getRandom().nextDouble() * (fullZoneBox.maxZ - fullZoneBox.minZ);
@@ -141,6 +136,9 @@ public class EffectZoneEntity extends Entity {
     }
 
     private void applyServerEffects(LivingEntity entity, ServerWorld world) {
+
+        if (this.type == 3) return;
+
         float effectiveStrength = this.strength;
 
         if (entity instanceof PlayerEntity player) {

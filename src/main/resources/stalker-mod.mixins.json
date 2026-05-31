@@ -5,7 +5,9 @@
 
   "mixins": [
     "DamageTrackerMixin",
-    "LivingEntityMixin"
+    "LivingEntityMixin",
+    "LightningEntityMixin",
+    "BlockEntityTypeMixin"
   ],
 
   "client": [

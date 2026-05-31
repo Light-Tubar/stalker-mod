@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "tip=false,waterlogged=false": { "model": "stalker-mod:block/pale_hanging_moss" },
+    "tip=false,waterlogged=true": { "model": "stalker-mod:block/pale_hanging_moss" },
+    "tip=true,waterlogged=false": { "model": "stalker-mod:block/pale_hanging_moss_tip" },
+    "tip=true,waterlogged=true": { "model": "stalker-mod:block/pale_hanging_moss_tip" }
+  }
+}

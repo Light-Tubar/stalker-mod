@@ -1,5 +1,8 @@
 package net.light.stalkermod;
 
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.light.stalkermod.block.entity.ShelfBlockEntity;
+import net.minecraft.item.ItemGroup;
 import com.mojang.serialization.Codec;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
@@ -38,8 +41,19 @@ import net.minecraft.world.GameRules;
 public class StalkerMod implements ModInitializer {
     public static final String MOD_ID = "stalker-mod";
     public static final Item BOLT_ITEM = new BoltItem(new Item.Settings().maxCount(64));
-
     public static final EntityType<BoltEntity> BOLT_ENTITY_TYPE;
+
+    public static final GameRules.Key<GameRules.BooleanRule> EMISSION_ENABLED = GameRuleRegistry.register(
+            "emissionEnabled",
+            GameRules.Category.UPDATES,
+            GameRuleFactory.createBooleanRule(false) // По умолчанию выключено!
+    );
+
+    public static final GameRules.Key<GameRules.IntRule> EMISSION_INTERVAL = GameRuleRegistry.register(
+            "emissionInterval",
+            GameRules.Category.UPDATES,
+            GameRuleFactory.createIntRule(72000) // По умолчанию 72000 тиков (1 час)
+    );
 
     static {
         BOLT_ENTITY_TYPE = Registry.register(
@@ -122,6 +136,10 @@ public class StalkerMod implements ModInitializer {
     public static final Identifier TINNITUS_ID = Identifier.of(MOD_ID, "tinnitus");
     public static final SoundEvent TINNITUS = SoundEvent.of(TINNITUS_ID);
 
+    public static net.minecraft.block.entity.BlockEntityType<net.light.stalkermod.block.entity.CopperGolemStatueBlockEntity> COPPER_GOLEM_STATUE_ENTITY;
+
+    public static net.minecraft.block.entity.BlockEntityType<net.light.stalkermod.block.entity.ShelfBlockEntity> SHELF_BLOCK_ENTITY;
+
     public static final EntityType<ElementalAnomalyEntity> ELEMENTAL_ANOMALY = Registry.register(
             Registries.ENTITY_TYPE, Identifier.of(MOD_ID, "elemental_anomaly"),
             EntityType.Builder.<ElementalAnomalyEntity>create(ElementalAnomalyEntity::new, SpawnGroup.MISC).dimensions(1.0f, 1.0f).build("elemental_anomaly"));
@@ -182,7 +200,7 @@ public class StalkerMod implements ModInitializer {
                     return ActionResult.SUCCESS;
                 }
 
-                if (mode == 4 || mode == 5) {
+                if (mode == 4 || mode == 5 || mode == 7) {
                     nbt.putInt("P2X", pos.getX());
                     nbt.putInt("P2Y", pos.getY());
                     nbt.putInt("P2Z", pos.getZ());
@@ -205,7 +223,7 @@ public class StalkerMod implements ModInitializer {
 
             if (user.isSneaking()) {
                 if (!world.isClient()) {
-                    mode = (mode + 1) % 7;
+                    mode = (mode + 1) % 8;
                     itemStack.set(MODE_COMPONENT, mode);
 
                     String[] modeKeys = {
@@ -215,7 +233,8 @@ public class StalkerMod implements ModInitializer {
                             "message.stalkermod.mode.electro",
                             "message.stalkermod.mode.radiation",
                             "message.stalkermod.mode.psi",
-                            "message.stalkermod.mode.setting"
+                            "message.stalkermod.mode.setting",
+                            "message.stalkermod.mode.safezone"
                     };
 
                     user.sendMessage(Text.translatable("message.stalkermod.mode_format", Text.translatable(modeKeys[mode])), true);
@@ -223,14 +242,14 @@ public class StalkerMod implements ModInitializer {
                 return TypedActionResult.success(itemStack);
             }
 
-            if ((mode == 4 || mode == 5) && !world.isClient()) {
+            if ((mode == 4 || mode == 5 || mode == 7) && !world.isClient()) {
                 NbtCompound nbt = itemStack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).copyNbt();
                 if (nbt.contains("P1X") && nbt.contains("P2X")) {
                     BlockPos p1 = new BlockPos(nbt.getInt("P1X"), nbt.getInt("P1Y"), nbt.getInt("P1Z"));
                     BlockPos p2 = new BlockPos(nbt.getInt("P2X"), nbt.getInt("P2Y"), nbt.getInt("P2Z"));
 
                     EffectZoneEntity zone = new EffectZoneEntity(EFFECT_ZONE_ENTITY, world);
-                    int zoneType = (mode == 4) ? 1 : 2;
+                    int zoneType = (mode == 4) ? 1 : (mode == 5) ? 2 : 3; // 3 - Безопасная зона
                     float zoneStrength = nbt.contains("ZoneStrength") ? nbt.getFloat("ZoneStrength") : 1.0f;
 
                     zone.setZoneData(p1, p2, zoneType, zoneStrength);
@@ -284,12 +303,87 @@ public class StalkerMod implements ModInitializer {
         return totalPsi;
     }
 
+    public static final ItemGroup STALKER_MOD_GROUP = Registry.register(
+            Registries.ITEM_GROUP,
+            Identifier.of(MOD_ID, "stalkermod_group"),
+            FabricItemGroup.builder()
+                    .displayName(Text.translatable("itemgroup.stalkermod.main"))
+                    .icon(() -> new ItemStack(ModBlocks.PALE_OAK_LOG))
+                    .entries((displayContext, entries) -> {
+
+                        entries.add(ModBlocks.PALE_OAK_LOG);
+                        entries.add(ModBlocks.STRIPPED_PALE_OAK_LOG);
+                        entries.add(ModBlocks.PALE_OAK_PLANKS);
+                        entries.add(ModBlocks.PALE_OAK_LEAVES);
+                        entries.add(ModBlocks.PALE_OAK_SAPLING);
+                        entries.add(ModBlocks.PALE_OAK_DOOR);
+                        entries.add(ModBlocks.PALE_OAK_TRAPDOOR);
+                        entries.add(ModBlocks.PALE_OAK_STAIRS);
+                        entries.add(ModBlocks.PALE_OAK_SLAB);
+                        entries.add(ModBlocks.PALE_MOSS_BLOCK);
+                        entries.add(ModBlocks.PALE_MOSS_CARPET);
+                        entries.add(ModBlocks.PALE_HANGING_MOSS);
+                        entries.add(ModBlocks.PALE_HANGING_MOSS_TIP);
+                        entries.add(ModBlocks.PALE_OAK_SIGN_ITEM);
+                        entries.add(ModBlocks.PALE_OAK_HANGING_SIGN_ITEM);
+
+                        entries.add(ModBlocks.PALE_OAK_SHELF);
+                        entries.add(ModBlocks.OAK_SHELF);
+                        entries.add(ModBlocks.SPRUCE_SHELF);
+                        entries.add(ModBlocks.BIRCH_SHELF);
+                        entries.add(ModBlocks.JUNGLE_SHELF);
+                        entries.add(ModBlocks.ACACIA_SHELF);
+                        entries.add(ModBlocks.DARK_OAK_SHELF);
+                        entries.add(ModBlocks.MANGROVE_SHELF);
+                        entries.add(ModBlocks.CHERRY_SHELF);
+                        entries.add(ModBlocks.BAMBOO_SHELF);
+                        entries.add(ModBlocks.CRIMSON_SHELF);
+                        entries.add(ModBlocks.WARPED_SHELF);
+
+                        entries.add(ModBlocks.COPPER_BARS);
+                        entries.add(ModBlocks.EXPOSED_COPPER_BARS);
+                        entries.add(ModBlocks.WEATHERED_COPPER_BARS);
+                        entries.add(ModBlocks.OXIDIZED_COPPER_BARS);
+
+                        entries.add(ModBlocks.COPPER_CHAIN);
+                        entries.add(ModBlocks.EXPOSED_COPPER_CHAIN);
+                        entries.add(ModBlocks.WEATHERED_COPPER_CHAIN);
+                        entries.add(ModBlocks.OXIDIZED_COPPER_CHAIN);
+
+                        entries.add(ModBlocks.COPPER_LANTERN);
+                        entries.add(ModBlocks.EXPOSED_COPPER_LANTERN);
+                        entries.add(ModBlocks.WEATHERED_COPPER_LANTERN);
+                        entries.add(ModBlocks.OXIDIZED_COPPER_LANTERN);
+
+                        entries.add(ModBlocks.COPPER_GOLEM_STATUE);
+                        entries.add(ModBlocks.EXPOSED_COPPER_GOLEM_STATUE);
+                        entries.add(ModBlocks.WEATHERED_COPPER_GOLEM_STATUE);
+                        entries.add(ModBlocks.OXIDIZED_COPPER_GOLEM_STATUE);
+
+                        entries.add(ModBlocks.WAXED_COPPER_GOLEM_STATUE);
+                        entries.add(ModBlocks.WAXED_EXPOSED_COPPER_GOLEM_STATUE);
+                        entries.add(ModBlocks.WAXED_WEATHERED_COPPER_GOLEM_STATUE);
+                        entries.add(ModBlocks.WAXED_OXIDIZED_COPPER_GOLEM_STATUE);
+                    })
+                    .build()
+    );
+
     @Override
     public void onInitialize() {
         LOGGER.info("Инициализация Stalker Mod...");
 
         net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playS2C().register(net.light.stalkermod.network.EmissionPayload.ID, net.light.stalkermod.network.EmissionPayload.CODEC);
         EmissionManager.register();
+        ModBlocks.registerModBlocks();
+        SHELF_BLOCK_ENTITY = Registry.register(
+                Registries.BLOCK_ENTITY_TYPE,
+                Identifier.of(MOD_ID, "shelf"),
+                net.minecraft.block.entity.BlockEntityType.Builder.create(net.light.stalkermod.block.entity.ShelfBlockEntity::new,
+                        ModBlocks.OAK_SHELF, ModBlocks.SPRUCE_SHELF, ModBlocks.BIRCH_SHELF,
+                        ModBlocks.JUNGLE_SHELF, ModBlocks.ACACIA_SHELF, ModBlocks.DARK_OAK_SHELF,
+                        ModBlocks.MANGROVE_SHELF, ModBlocks.CHERRY_SHELF, ModBlocks.PALE_OAK_SHELF,
+                        ModBlocks.BAMBOO_SHELF, ModBlocks.CRIMSON_SHELF, ModBlocks.WARPED_SHELF
+                ).build(null));
         Registry.register(Registries.ITEM, Identifier.of(MOD_ID, "anomaly_spawner"), ANOMALY_SPAWNER);
         Registry.register(Registries.ITEM, Identifier.of(MOD_ID, "bolt"), BOLT_ITEM);
         Registry.register(Registries.SOUND_EVENT, TRAMPOLINE_IDLE_ID, TRAMPOLINE_IDLE);
@@ -308,6 +402,22 @@ public class StalkerMod implements ModInitializer {
             content.add(ANOMALY_SPAWNER);
             content.add(BOLT_ITEM);
         });
+
+        COPPER_GOLEM_STATUE_ENTITY = Registry.register(
+                Registries.BLOCK_ENTITY_TYPE,
+                Identifier.of(MOD_ID, "copper_golem_statue"),
+                net.minecraft.block.entity.BlockEntityType.Builder.create(net.light.stalkermod.block.entity.CopperGolemStatueBlockEntity::new,
+                        ModBlocks.COPPER_GOLEM_STATUE,
+                        ModBlocks.EXPOSED_COPPER_GOLEM_STATUE,
+                        ModBlocks.WEATHERED_COPPER_GOLEM_STATUE,
+                        ModBlocks.OXIDIZED_COPPER_GOLEM_STATUE,
+                        ModBlocks.WAXED_COPPER_GOLEM_STATUE,
+                        ModBlocks.WAXED_EXPOSED_COPPER_GOLEM_STATUE,
+                        ModBlocks.WAXED_WEATHERED_COPPER_GOLEM_STATUE,
+                        ModBlocks.WAXED_OXIDIZED_COPPER_GOLEM_STATUE
+                ).build(null)
+        );
+
         net.minecraft.registry.Registry.register(net.minecraft.registry.Registries.SOUND_EVENT, GEIGER_1_ID, GEIGER_1);
         net.minecraft.registry.Registry.register(net.minecraft.registry.Registries.SOUND_EVENT, GEIGER_2_ID, GEIGER_2);
         net.minecraft.registry.Registry.register(net.minecraft.registry.Registries.SOUND_EVENT, GEIGER_3_ID, GEIGER_3);
@@ -359,6 +469,30 @@ public class StalkerMod implements ModInitializer {
                                 context.getSource().sendFeedback(() -> Text.translatable("message.stalkermod.emission_stopped"), true);
                                 return 1;
                             }))
+
+                    .then(net.minecraft.server.command.CommandManager.literal("enable")
+                            .executes(context -> {
+                                context.getSource().getServer().getGameRules().get(EMISSION_ENABLED).set(true, context.getSource().getServer());
+                                context.getSource().sendFeedback(() -> Text.translatable("command.stalkermod.emission.enabled"), true);
+                                return 1;
+                            }))
+                    .then(net.minecraft.server.command.CommandManager.literal("disable")
+                            .executes(context -> {
+                                context.getSource().getServer().getGameRules().get(EMISSION_ENABLED).set(false, context.getSource().getServer());
+                                EmissionManager.emissionTimer = -1;
+                                context.getSource().sendFeedback(() -> Text.translatable("command.stalkermod.emission.disabled"), true);
+                                return 1;
+                            }))
+                    .then(net.minecraft.server.command.CommandManager.literal("period")
+                            .then(net.minecraft.server.command.CommandManager.argument("ticks", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1200))
+                                    .executes(context -> {
+                                        int ticks = com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "ticks");
+                                        context.getSource().getServer().getGameRules().get(EMISSION_INTERVAL).set(ticks, context.getSource().getServer());
+                                        context.getSource().sendFeedback(() -> Text.translatable("command.stalkermod.emission.period_set", ticks), true);
+                                        return 1;
+                                    })
+                            )
+                    )
             );
         });
 
@@ -381,7 +515,7 @@ public class StalkerMod implements ModInitializer {
                         return ActionResult.SUCCESS;
                     }
 
-                    if (mode == 4 || mode == 5) {
+                    if (mode == 4 || mode == 5 || mode == 7) {
                         nbt.putInt("P1X", pos.getX());
                         nbt.putInt("P1Y", pos.getY());
                         nbt.putInt("P1Z", pos.getZ());
@@ -392,7 +526,7 @@ public class StalkerMod implements ModInitializer {
                     }
                 } else {
                     int mode = stack.getOrDefault(MODE_COMPONENT, 0);
-                    if (player.isSneaking() || mode == 4 || mode == 5) return ActionResult.SUCCESS;
+                    if (player.isSneaking() || mode == 4 || mode == 5 || mode == 7) return ActionResult.SUCCESS;
                 }
             }
             return ActionResult.PASS;

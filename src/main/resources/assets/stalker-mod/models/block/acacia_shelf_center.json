@@ -1,0 +1,7 @@
+﻿{
+  "parent": "stalker-mod:block/template_shelf_center",
+  "textures": {
+    "all": "stalker-mod:block/acacia_shelf",
+    "particle": "minecraft:block/stripped_acacia_log"
+  }
+}

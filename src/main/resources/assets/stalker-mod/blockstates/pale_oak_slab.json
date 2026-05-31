@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "stalker-mod:block/pale_oak_slab"
+    },
+    "type=double": {
+      "model": "stalker-mod:block/pale_oak_planks"
+    },
+    "type=top": {
+      "model": "stalker-mod:block/pale_oak_slab_top"
+    }
+  }
+}

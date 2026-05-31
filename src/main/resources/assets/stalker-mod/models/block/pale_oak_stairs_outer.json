@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/outer_stairs",
+  "textures": {
+    "bottom": "stalker-mod:block/pale_oak_planks",
+    "side": "stalker-mod:block/pale_oak_planks",
+    "top": "stalker-mod:block/pale_oak_planks"
+  }
+}

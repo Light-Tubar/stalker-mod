@@ -1,0 +1,7 @@
+﻿{
+  "parent": "stalker-mod:block/template_shelf_inventory",
+  "textures": {
+    "all": "stalker-mod:block/oak_shelf",
+    "particle": "minecraft:block/stripped_oak_log"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "stalker-mod:block/template_torch_wall",
+  "textures": {
+    "torch": "stalker-mod:block/copper_torch"
+  }
+}

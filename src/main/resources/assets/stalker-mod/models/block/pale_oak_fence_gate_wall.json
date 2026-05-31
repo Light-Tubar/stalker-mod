@@ -1,0 +1,6 @@
+{
+  "parent": "stalker-mod:block/template_fence_gate_wall",
+  "textures": {
+    "texture": "stalker-mod:block/pale_oak_planks"
+  }
+}

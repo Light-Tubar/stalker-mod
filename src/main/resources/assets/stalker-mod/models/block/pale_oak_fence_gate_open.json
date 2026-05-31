@@ -1,0 +1,6 @@
+{
+  "parent": "stalker-mod:block/template_fence_gate_open",
+  "textures": {
+    "texture": "stalker-mod:block/pale_oak_planks"
+  }
+}

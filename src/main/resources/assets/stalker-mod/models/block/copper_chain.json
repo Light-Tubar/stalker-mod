@@ -1,0 +1,6 @@
+{
+  "parent": "stalker-mod:block/template_chain",
+  "textures": {
+    "texture": "stalker-mod:block/copper_chain"
+  }
+}

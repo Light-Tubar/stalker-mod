@@ -1,0 +1,17 @@
+{
+  "ambientocclusion": true,
+  "textures": {
+    "particle": "stalker-mod:block/pale_moss_carpet_side_tall",
+    "texture": "stalker-mod:block/pale_moss_carpet_side_tall"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 16, 1],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#texture", "cullface": "north"},
+        "south": {"uv": [0, 0, 16, 16], "texture": "#texture"}
+      }
+    }
+  ]
+}

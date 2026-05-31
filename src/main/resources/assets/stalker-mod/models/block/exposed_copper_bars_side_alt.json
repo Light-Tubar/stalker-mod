@@ -1,0 +1,7 @@
+{
+  "parent": "stalker-mod:block/template_bars_side_alt",
+  "textures": {
+    "bars": "stalker-mod:block/exposed_copper_bars",
+    "edge": "stalker-mod:block/exposed_copper_bars"
+  }
+}
